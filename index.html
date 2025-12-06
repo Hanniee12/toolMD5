@@ -10,10 +10,20 @@ body { margin:0; padding:0; font-family: monospace; background:#000; color:#0f0;
 
 /* Bảng thông báo */
 #noticeBox {
-  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-  background:#111; border:2px solid #00ffcc; color:#0f0;
-  padding:20px; width:90%; max-width:350px; text-align:center;
-  z-index:10000; border-radius:12px; box-shadow:0 0 10px #0f0;
+  position:fixed;
+  left:50%;
+  bottom:60px;                 /* Đưa bảng xuống, không đè lên nút Đăng Nhập */
+  transform:translateX(-50%);
+  background:#111;
+  border:2px solid #00ffcc;
+  color:#0f0;
+  padding:20px;
+  width:90%;
+  max-width:350px;
+  text-align:center;
+  z-index:1000;                /* Vẫn nổi trên nền, nhưng không cần 10000 */
+  border-radius:12px;
+  box-shadow:0 0 10px #0f0;
 }
 #noticeBox button {
   margin-top:12px; padding:10px; background:#00ffcc; color:#000;
@@ -156,3 +166,4 @@ function copyResult(){
 </script>
 </body>
 </html>
+
