@@ -6,9 +6,7 @@
 <title>MD5 Tool V10 Pro - Login</title>
 <style>
 /* Box sizing chuẩn cho tất cả */
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 /* Body */
 body {
@@ -208,7 +206,9 @@ iframe {
 <!-- Mini tool MD5 -->
 <div id="miniBox">
   <h4>Tool MD5 V10 Pro</h4>
-  <button onclick="toggleMiniBox()" style="position:absolute; top:5px; right:5px; padding:5px 8px; font-size:0.8rem;">-</button>
+  <!-- Nút thu nhỏ/hiện -->
+  <button onclick="toggleMiniBox()" 
+          style="position:absolute; top:5px; right:5px; padding:5px 8px; font-size:0.8rem;">-</button>
   <div id="miniContent">
     <input id="md5Input" placeholder="Nhập MD5">
     <button onclick="predict()">Dự đoán</button>
@@ -219,26 +219,11 @@ iframe {
     <div id="history">Lịch sử: [ ]</div>
   </div>
 </div>
-  
+
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
 <script src="in.js"></script>
 <script>
-function closeNotice() {
-  document.getElementById('noticeBox').style.display='none';
-}
-
-function toggleRotation() {
-  const miniBox = document.getElementById('miniBox');
-  const rotateButton = document.querySelector('[onclick="toggleRotation()"]');
-  
-  miniBox.classList.toggle('rotated');
-  
-  if (miniBox.classList.contains('rotated')) {
-    rotateButton.textContent = 'Trở Lại';
-  } else {
-    rotateButton.textContent = 'Tự Xoay';
-  }
-}
+function closeNotice() { document.getElementById('noticeBox').style.display='none'; }
 
 function toggleMiniBox() {
   const content = document.getElementById('miniContent');
@@ -253,16 +238,22 @@ function toggleMiniBox() {
   }
 }
 
+function toggleRotation() {
+  const miniBox = document.getElementById('miniBox');
+  const rotateButton = document.querySelector('[onclick="toggleRotation()"]');
+  miniBox.classList.toggle('rotated');
+  rotateButton.textContent = miniBox.classList.contains('rotated') ? 'Trở Lại' : 'Tự Xoay';
+}
+
 function predict() { 
   const md5 = document.getElementById('md5Input').value;
   if(!md5) return alert('Nhập MD5 trước!');
-  document.getElementById('result').textContent = "Dự đoán: " + md5.slice(0,6) + "..."; // ví dụ
+  document.getElementById('result').textContent = "Dự đoán: " + md5.slice(0,6) + "...";
 }
 
 function toggleInvert() {
   const miniBox = document.getElementById('miniBox');
-  if(miniBox.style.filter==='invert(1)') miniBox.style.filter='invert(0)';
-  else miniBox.style.filter='invert(1)';
+  miniBox.style.filter = miniBox.style.filter==='invert(1)' ? 'invert(0)' : 'invert(1)';
 }
 
 function copyResult() {
