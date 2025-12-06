@@ -2,19 +2,94 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Panel - MD5 Tool</title>
 <style>
-body { margin:0; padding:0; font-family: monospace; background:#000; color:#0f0; }
-#adminLogin, #adminPanel { width:400px; margin:50px auto; background:#111; padding:20px; border:1px solid #0f0; border-radius:10px; }
-input, select, button { width:100%; padding:10px; margin:8px 0; border:none; border-radius:5px; }
-input, select { background:#222; color:#0f0; }
-button { background:#00ffcc; color:#000; font-weight:bold; cursor:pointer; }
-table { width:100%; border-collapse: collapse; margin-top:10px; }
-th, td { border:1px solid #0f0; padding:5px; text-align:center; }
+/* Body chung */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: monospace;
+  background: #000;
+  color: #0f0;
+}
+
+/* Container chung cho login và panel */
+#adminLogin, #adminPanel {
+  width: 90%;           /* co giãn theo màn hình */
+  max-width: 400px;     /* tối đa 400px */
+  margin: 50px auto;
+  background: #111;
+  padding: 20px;
+  border: 1px solid #0f0;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+/* Input, select, button */
+input, select, button {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+input, select {
+  background: #222;
+  color: #0f0;
+}
+
+button {
+  background: #00ffcc;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Bảng danh sách tài khoản */
+.table-wrapper {
+  overflow-x: auto; /* cho scroll ngang trên điện thoại */
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+th, td {
+  border: 1px solid #0f0;
+  padding: 5px;
+  text-align: center;
+}
+
+/* Responsive cho điện thoại nhỏ */
+@media screen and (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  #adminLogin, #adminPanel {
+    margin: 20px auto;
+    padding: 15px;
+  }
+
+  table, th, td {
+    font-size: 12px;
+  }
+
+  button, input, select {
+    padding: 8px;
+  }
+}
 </style>
 </head>
 <body>
 
+<!-- Login -->
 <div id="adminLogin">
   <h3>Admin Login</h3>
   <input id="adminUser" placeholder="Tài khoản admin">
@@ -22,8 +97,10 @@ th, td { border:1px solid #0f0; padding:5px; text-align:center; }
   <button onclick="adminLoginNow()">Đăng Nhập</button>
 </div>
 
+<!-- Admin Panel -->
 <div id="adminPanel" style="display:none;">
   <h3>Admin Panel</h3>
+  
   <input id="newUser" placeholder="Tên tài khoản mới">
   <input id="newPass" placeholder="Mật khẩu mới">
   <select id="expireTime">
@@ -35,22 +112,26 @@ th, td { border:1px solid #0f0; padding:5px; text-align:center; }
   <button onclick="createUser()">Tạo Tài Khoản</button>
 
   <h4>Danh sách tài khoản</h4>
-  <table>
-    <thead><tr><th>#</th><th>Tài khoản</th><th>Mật khẩu</th><th>Hết hạn</th><th>Hành động</th></tr></thead>
-    <tbody id="userList"></tbody>
-  </table>
-  <!-- Phần thêm thông báo -->
-<h4>Thông báo cho người dùng</h4>
-<input id="adminNotice" placeholder="Nhập thông báo...">
-<button onclick="saveNotice()">Lưu thông báo</button>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Tài khoản</th>
+          <th>Mật khẩu</th>
+          <th>Hết hạn</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody id="userList"></tbody>
+    </table>
+  </div>
+
+  <h4>Thông báo cho người dùng</h4>
+  <input id="adminNotice" placeholder="Nhập thông báo...">
+  <button onclick="saveNotice()">Lưu thông báo</button>
 </div>
 
-<script>
-// Admin cố định
-src="admin.js"
-</script>
-
-
-
+<script src="admin.js"></script>
 </body>
 </html>
