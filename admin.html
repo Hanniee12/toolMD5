@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel - MD5 Tool</title>
+<style>
+body { margin:0; padding:0; font-family: monospace; background:#000; color:#0f0; }
+#adminLogin, #adminPanel { width:400px; margin:50px auto; background:#111; padding:20px; border:1px solid #0f0; border-radius:10px; }
+input, select, button { width:100%; padding:10px; margin:8px 0; border:none; border-radius:5px; }
+input, select { background:#222; color:#0f0; }
+button { background:#00ffcc; color:#000; font-weight:bold; cursor:pointer; }
+table { width:100%; border-collapse: collapse; margin-top:10px; }
+th, td { border:1px solid #0f0; padding:5px; text-align:center; }
+</style>
+</head>
+<body>
+
+<div id="adminLogin">
+  <h3>Admin Login</h3>
+  <input id="adminUser" placeholder="Tài khoản admin">
+  <input id="adminPass" type="password" placeholder="Mật khẩu admin">
+  <button onclick="adminLoginNow()">Đăng Nhập</button>
+</div>
+
+<div id="adminPanel" style="display:none;">
+  <h3>Admin Panel</h3>
+  <input id="newUser" placeholder="Tên tài khoản mới">
+  <input id="newPass" placeholder="Mật khẩu mới">
+  <select id="expireTime">
+    <option value="3600">1 Giờ</option>
+    <option value="86400">1 Ngày</option>
+    <option value="604800">7 Ngày</option>
+    <option value="2592000">30 Ngày</option>
+  </select>
+  <button onclick="createUser()">Tạo Tài Khoản</button>
+
+  <h4>Danh sách tài khoản</h4>
+  <table>
+    <thead><tr><th>#</th><th>Tài khoản</th><th>Mật khẩu</th><th>Hết hạn</th><th>Hành động</th></tr></thead>
+    <tbody id="userList"></tbody>
+  </table>
+  <!-- Phần thêm thông báo -->
+<h4>Thông báo cho người dùng</h4>
+<input id="adminNotice" placeholder="Nhập thông báo...">
+<button onclick="saveNotice()">Lưu thông báo</button>
+</div>
+
+<script>
+// Admin cố định
+const ADMIN_USER = "0849173749";
+const ADMIN_PASS = "0338526055";
+
+// Login admin
+function adminLoginNow(){
+  let u = document.getElementById("adminUser").value.trim();
+  let p = document.getElementById("adminPass").value.trim();
+  if(u === ADMIN_USER && p === ADMIN_PASS){
+    alert("Đăng nhập admin thành công!");
+    document.getElementById("adminLogin").style.display="none";
+    document.getElementById("adminPanel").style.display="block";
+    renderUserList();
+  } else {
+    alert("Sai admin hoặc mật khẩu!");
+  }
+}
+
+// Tạo tài khoản
+function createUser(){
+  let u = document.getElementById("newUser").value.trim();
+  let p = document.getElementById("newPass").value.trim();
+  let t = parseInt(document.getElementById("expireTime").value);
+  if(!u || !p){ alert("Nhập đủ thông tin!"); return; }
+
+  let db = JSON.parse(localStorage.getItem("userDB") || "[]");
+  if(db.find(x=>x.u===u)){ alert("Tài khoản đã tồn tại!"); return; }
+
+  let expireAt = Date.now() + t*1000; // tính thời gian hết hạn
+  db.push({u,p,expireAt});
+  localStorage.setItem("userDB", JSON.stringify(db));
+
+  document.getElementById("newUser").value="";
+  document.getElementById("newPass").value="";
+  renderUserList();
+}
+
+// Xóa tài khoản
+function deleteUser(index){
+  let db = JSON.parse(localStorage.getItem("userDB") || "[]");
+  if(confirm(`Xóa tài khoản ${db[index].u}?`)){
+    db.splice(index,1);
+    localStorage.setItem("userDB", JSON.stringify(db));
+    renderUserList();
+  }
+}
+
+// Render danh sách + đếm ngược
+function renderUserList(){
+  let db = JSON.parse(localStorage.getItem("userDB") || "[]");
+  const tbody = document.getElementById("userList");
+  tbody.innerHTML = "";
+  db.forEach((x,i)=>{
+    const now = Date.now();
+    let remain = x.expireAt - now;
+    let remainText = remain>0 ? formatTime(remain) : "Hết hạn";
+    tbody.innerHTML += `<tr>
+      <td>${i+1}</td>
+      <td>${x.u}</td>
+      <td>${x.p}</td>
+      <td id="time-${i}">${remainText}</td>
+      <td><button onclick="deleteUser(${i})">Xóa</button></td>
+    </tr>`;
+  });
+}
+
+// Format thời gian
+function formatTime(ms){
+  let totalSec = Math.floor(ms/1000);
+  let h = Math.floor(totalSec/3600);
+  let m = Math.floor((totalSec%3600)/60);
+  let s = totalSec%60;
+  return `${h}h ${m}m ${s}s`;
+}
+
+// Cập nhật đếm ngược mỗi giây
+setInterval(()=>{
+  let db = JSON.parse(localStorage.getItem("userDB") || "[]");
+  db.forEach((x,i)=>{
+    const el = document.getElementById(`time-${i}`);
+    if(el){
+      let remain = x.expireAt - Date.now();
+      el.innerText = remain>0 ? formatTime(remain) : "Hết hạn";
+    }
+  });
+},1000);
+
+
+
+function saveNotice(){
+  const notice = document.getElementById("adminNotice").value.trim();
+  localStorage.setItem("globalNotice", notice);
+  alert("Thông báo đã lưu!");
+}
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>MD5 Tool V10 Pro - Login</title>
+<style>
+body { margin:0; padding:0; font-family: monospace; background:#000; color:#0f0; overflow:hidden; }
+
+/* Form đăng nhập */
+#userLogin {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  background:#111; padding:20px; border:1px solid #0f0; border-radius:10px; width:320px; text-align:center; z-index:10;
+}
+#userLogin input, #userLogin button { width:100%; padding:10px; margin:8px 0; border:none; border-radius:5px; }
+#userLogin input { background:#222; color:#0f0; }
+#userLogin button { background:#00ffcc; color:#000; font-weight:bold; cursor:pointer; }
+
+/* Join game + miniBox */
+#joinBox, #miniBox { display:none; }
+#joinBox {
+  position:absolute; top:20px; left:50%; transform:translateX(-50%);
+  background:#111; padding:20px; border:1px solid #0f0; border-radius:10px; width:320px; text-align:center; z-index:10;
+}
+#joinBox input, #joinBox button { width:100%; padding:10px; margin:8px 0; border:none; border-radius:5px; }
+#joinBox input { background:#222; color:#0f0; }
+#joinBox button { background:#00ffcc; color:#000; font-weight:bold; cursor:pointer; }
+
+iframe { width:100vw; height:100vh; border:none; display:none; position:relative; z-index:1; }
+#miniBox {
+  position:fixed; top:20px; left:20px; width:300px;
+  background:rgba(0,0,0,0.85); border:1px solid #00ffcc; border-radius:10px; padding:12px;
+  display:none; z-index:9999; cursor:move;
+}
+#miniBox input { width:100%; background:#111; border:1px solid #00ffcc; color:#0f0; padding:8px; border-radius:5px; }
+#miniBox button { width:100%; padding:8px; margin-top:5px; background:#00ffcc; border:none; color:#000; font-weight:bold; border-radius:5px; cursor:pointer; }
+#result { margin-top:8px; font-weight:bold; color:#fff; }
+#history { margin-top:8px; font-size:0.85rem; color:#0f0; max-height:120px; overflow:auto; border-top:1px solid #0f0; padding-top:5px; }
+
+/* Bảng thông báo */
+#noticeBox {
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  background:#111; border:2px solid #00ffcc; color:#0f0; padding:20px;
+  width:400px; text-align:center; z-index:10000; border-radius:10px;
+}
+#noticeBox button { margin-top:10px; padding:8px; background:#00ffcc; color:#000; border:none; border-radius:5px; cursor:pointer; font-weight:bold; }
+</style>
+</head>
+<body>
+
+<!-- Bảng thông báo -->
+<div id="noticeBox">
+  <p id="noticeContent"></p>
+  <button onclick="closeNotice()">Đóng</button>
+</div>
+
+<!-- Form đăng nhập -->
+<div id="userLogin">
+  <h3>Đăng nhập</h3>
+  <input id="user" placeholder="Tài khoản">
+  <input id="pass" type="password" placeholder="Mật khẩu">
+  <button onclick="userLoginNow()">Đăng Nhập</button>
+</div>
+
+<!-- Nhập link game -->
+<div id="joinBox">
+  <h3>Nhập link game</h3>
+  <input id="gameLink" placeholder="Nhập link game ở đây">
+  <button onclick="joinGame()">Vào</button>
+</div>
+
+<!-- Iframe game -->
+<iframe id="gameFrame"></iframe>
+
+<!-- Mini tool MD5 -->
+<div id="miniBox">
+  <h4>Tool MD5 V10 Pro</h4>
+  <input id="md5Input" placeholder="Nhập MD5">
+  <button onclick="predict()">Dự đoán</button>
+  <button onclick="toggleInvert()">Đảo Cầu</button>
+  <button onclick="copyResult()">Past</button>
+  <p id="result">...</p>
+  <div id="history">Lịch sử: [ ]</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
+
+<script>
+/* Nội dung thông báo admin */
+let notice = localStorage.getItem("globalNotice") || "THÔNG BÁO: Giảm giá! Liên hệ ADMIN: sooddt 0849173749 để được cấp TK/MK.";
+document.getElementById("noticeContent").innerText = notice;
+
+/* Hiển thị popup ngay khi load */
+window.onload = function(){
+  document.getElementById("noticeBox").style.display = "block";
+}
+
+function closeNotice(){
+  document.getElementById("noticeBox").style.display = "none";
+}
+
+/* Mẫu user DB */
+let userDB = JSON.parse(localStorage.getItem("userDB") || "[]");
+
+// Đăng nhập user
+function userLoginNow(){
+  let u = document.getElementById("user").value.trim();
+  let p = document.getElementById("pass").value.trim();
+
+  let ok = userDB.find(x => x.u===u && x.p===p);
+
+  if(!ok){
+    alert("Sai tài khoản hoặc mật khẩu!");
+    return;
+  }
+
+  document.getElementById("userLogin").style.display="none";
+  document.getElementById("joinBox").style.display="block";
+}
+
+/* Join game */
+function joinGame() {
+  let link = document.getElementById("gameLink").value.trim();
+  if(!link) return alert("Nhập link game!");
+  if(!link.startsWith("http")) link = "https://" + link;
+  document.getElementById("gameFrame").src = link;
+  document.getElementById("gameFrame").style.display = "block";
+  document.getElementById("joinBox").style.display = "none";
+  document.getElementById("miniBox").style.display = "block";
+}
+
+/* MD5 Tool cũ */
+let isInverted=false,historyArr=[];
+function md5Predict(md5){md5=md5.toLowerCase();if(!/^[a-f0-9]{32}$/.test(md5))return null;let xor=0;for(let i=0;i<32;i+=8){xor^=parseInt(md5.substr(i,8),16);}let sum=0;for(let i=0;i<32;i++){sum+=parseInt(md5[i],16);}for(let j=0;j<100;j++){xor=((xor<<3)|(xor>>>5))^sum;sum=(sum+(xor&0xff))^((xor>>8)&0xff);}let megaHash=xor*31+sum*17;megaHash=megaHash^((megaHash<<5)|(megaHash>>>7));return(Math.abs(megaHash)%2===0)?"XỈU":"TÀI";}
+function predict(){let md5=document.getElementById("md5Input").value.trim();const resEl=document.getElementById("result");const output=md5Predict(md5);if(!output){resEl.innerText="MD5 không hợp lệ!";return;}let final=isInverted?(output==="TÀI"?"XỈU":"TÀI"):output;resEl.innerText="Kết quả: "+final;const now=new Date();const time=now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0')+":"+now.getSeconds().toString().padStart(2,'0');historyArr.unshift(`${time} - ${final}`);if(historyArr.length>2)historyArr.pop();document.getElementById("history").innerHTML="Lịch sử: <br>"+historyArr.join("<br>");}
+function toggleInvert(){isInverted=!isInverted;alert("Chế độ đảo ngược: "+(isInverted?"BẬT":"TẮT"));}
+async function copyResult(){try{const md5Input=document.getElementById("md5Input");const text=await navigator.clipboard.readText();md5Input.value=text;alert("Đã dán nội dung clipboard vào ô MD5!");}catch(err){alert("Không thể đọc clipboard: "+err);}}
+
+/* Kéo mini box */
+(function(){const box=document.getElementById("miniBox");let x=0,y=0,drag=false;box.addEventListener("mousedown",e=>{drag=true;x=e.clientX-box.offsetLeft;y=e.clientY-box.offsetTop;});document.addEventListener("mouseup",()=>drag=false);document.addEventListener("mousemove",e=>{if(!drag)return;box.style.left=(e.clientX-x)+"px";box.style.top=(e.clientY-y)+"px";});})();
+</script>
+
+</body>
+</html>
