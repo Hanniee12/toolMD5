@@ -3,133 +3,458 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel - MD5 Tool</title>
+<title>Admin Panel - MD5 Tool V10 Pro</title>
 <style>
-/* Body chung */
-body {
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: monospace;
-  background: #000;
-  color: #0f0;
 }
 
-/* Container chung cho login và panel */
-#adminLogin, #adminPanel {
-  width: 90%;           /* co giãn theo màn hình */
-  max-width: 400px;     /* tối đa 400px */
-  margin: 50px auto;
-  background: #111;
+body {
+  font-family: 'Courier New', monospace;
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+  color: #0f0;
+  min-height: 100vh;
   padding: 20px;
-  border: 1px solid #0f0;
-  border-radius: 10px;
-  box-sizing: border-box;
 }
 
-/* Input, select, button */
-input, select, button {
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  padding: 10px;
-  margin: 8px 0;
-  border: none;
-  border-radius: 5px;
-  box-sizing: border-box;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(0, 255, 204, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(0, 255, 0, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
 }
 
-input, select {
-  background: #222;
+.container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Login Panel */
+#adminLogin {
+  background: rgba(17, 17, 17, 0.95);
+  backdrop-filter: blur(15px);
+  padding: 40px;
+  border: 2px solid #0f0;
+  border-radius: 20px;
+  max-width: 400px;
+  margin: 100px auto;
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#adminLogin h3 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2rem;
+  color: #00ffcc;
+  text-shadow: 0 0 15px rgba(0, 255, 204, 0.8);
+}
+
+/* Admin Panel */
+#adminPanel {
+  display: none;
+  animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.panel-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 30px;
+  background: rgba(0, 255, 204, 0.1);
+  border: 2px solid #00ffcc;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+}
+
+.panel-header h2 {
+  font-size: 2.5rem;
+  color: #00ffcc;
+  text-shadow: 0 0 15px rgba(0, 255, 204, 0.8);
+  margin-bottom: 10px;
+}
+
+.panel-header p {
   color: #0f0;
+  font-size: 1.1rem;
 }
 
+.section {
+  background: rgba(17, 17, 17, 0.95);
+  backdrop-filter: blur(15px);
+  padding: 30px;
+  margin-bottom: 30px;
+  border: 2px solid #0f0;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+}
+
+.section h4 {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #00ffcc;
+  text-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
+  padding-bottom: 10px;
+  border-bottom: 2px solid #00ffcc;
+}
+
+/* Input & Select */
+input, select, textarea {
+  width: 100%;
+  padding: 15px;
+  margin: 10px 0;
+  border: 2px solid #0f0;
+  border-radius: 10px;
+  background: rgba(34, 34, 34, 0.8);
+  color: #0f0;
+  font-size: 1rem;
+  font-family: 'Courier New', monospace;
+  transition: all 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #00ffcc;
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
+  background: rgba(34, 34, 34, 1);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Buttons */
 button {
-  background: #00ffcc;
+  width: 100%;
+  padding: 15px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #00ffcc 0%, #00cc99 100%);
   color: #000;
   font-weight: bold;
+  font-size: 1.1rem;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 255, 204, 0.4);
+  font-family: 'Courier New', monospace;
 }
 
-/* Bảng danh sách tài khoản */
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 255, 204, 0.6);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button.danger {
+  background: linear-gradient(135deg, #ff0066 0%, #cc0044 100%);
+  box-shadow: 0 4px 15px rgba(255, 0, 102, 0.4);
+}
+
+button.danger:hover {
+  box-shadow: 0 6px 20px rgba(255, 0, 102, 0.6);
+}
+
+/* Table */
 .table-wrapper {
-  overflow-x: auto; /* cho scroll ngang trên điện thoại */
+  overflow-x: auto;
+  margin-top: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
-  font-size: 14px;
+  background: rgba(0, 0, 0, 0.5);
 }
 
 th, td {
   border: 1px solid #0f0;
-  padding: 5px;
+  padding: 12px;
   text-align: center;
+  font-size: 0.95rem;
 }
 
-/* Responsive cho điện thoại nhỏ */
-@media screen and (max-width: 480px) {
-  body {
-    font-size: 14px;
-  }
+th {
+  background: rgba(0, 255, 204, 0.2);
+  color: #00ffcc;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
 
-  #adminLogin, #adminPanel {
-    margin: 20px auto;
+td {
+  background: rgba(17, 17, 17, 0.8);
+}
+
+tr:hover td {
+  background: rgba(0, 255, 204, 0.1);
+}
+
+.expire-warning {
+  color: #ff0066;
+  font-weight: bold;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  25%, 75% { opacity: 0.5; }
+}
+
+.expire-ok {
+  color: #00ff00;
+}
+
+/* Grid layout cho form */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.form-grid input,
+.form-grid select {
+  margin: 0;
+}
+
+/* Stats cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: rgba(0, 255, 204, 0.1);
+  border: 2px solid #00ffcc;
+  border-radius: 15px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 25px rgba(0, 255, 204, 0.5);
+}
+
+.stat-card h5 {
+  color: #0f0;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-card .number {
+  font-size: 2.5rem;
+  color: #00ffcc;
+  font-weight: bold;
+  text-shadow: 0 0 15px rgba(0, 255, 204, 0.8);
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  body {
     padding: 15px;
   }
 
-  table, th, td {
-    font-size: 12px;
+  #adminLogin, .section {
+    padding: 20px;
   }
 
-  button, input, select {
-    padding: 8px;
+  .panel-header {
+    padding: 20px;
   }
+
+  .panel-header h2 {
+    font-size: 1.8rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  table {
+    font-size: 0.85rem;
+  }
+
+  th, td {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+
+  button {
+    padding: 12px;
+    font-size: 1rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .panel-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .stat-card .number {
+    font-size: 2rem;
+  }
+
+  input, select, textarea, button {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Loading */
+.loading {
+  pointer-events: none;
+  opacity: 0.6;
+  position: relative;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid rgba(0, 255, 204, 0.3);
+  border-top-color: #00ffcc;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 </style>
 </head>
 <body>
-
-<!-- Login -->
-<div id="adminLogin">
-  <h3>Admin Login</h3>
-  <input id="adminUser" placeholder="Tài khoản admin">
-  <input id="adminPass" type="password" placeholder="Mật khẩu admin">
-  <button onclick="adminLoginNow()">Đăng Nhập</button>
-</div>
-
-<!-- Admin Panel -->
-<div id="adminPanel" style="display:none;">
-  <h3>Admin Panel</h3>
-  
-  <input id="newUser" placeholder="Tên tài khoản mới">
-  <input id="newPass" placeholder="Mật khẩu mới">
-  <select id="expireTime">
-    <option value="3600">1 Giờ</option>
-    <option value="86400">1 Ngày</option>
-    <option value="604800">7 Ngày</option>
-    <option value="2592000">30 Ngày</option>
-  </select>
-  <button onclick="createUser()">Tạo Tài Khoản</button>
-
-  <h4>Danh sách tài khoản</h4>
-  <div class="table-wrapper">
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Tài khoản</th>
-          <th>Mật khẩu</th>
-          <th>Hết hạn</th>
-          <th>Hành động</th>
-        </tr>
-      </thead>
-      <tbody id="userList"></tbody>
-    </table>
+<div class="container">
+  <!-- Login Panel -->
+  <div id="adminLogin">
+    <h3>🔐 Admin Login</h3>
+    <input id="adminUser" placeholder="Tài khoản admin" autocomplete="username">
+    <input id="adminPass" type="password" placeholder="Mật khẩu admin" autocomplete="current-password">
+    <button onclick="adminLoginNow()">Đăng Nhập</button>
   </div>
 
-  <h4>Thông báo cho người dùng</h4>
-  <input id="adminNotice" placeholder="Nhập thông báo...">
-  <button onclick="saveNotice()">Lưu thông báo</button>
+  <!-- Admin Panel -->
+  <div id="adminPanel">
+    <div class="panel-header">
+      <h2>⚡ Admin Panel</h2>
+      <p>MD5 Tool V10 Pro - Quản lý hệ thống</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h5>Tổng tài khoản</h5>
+        <div class="number" id="totalUsers">0</div>
+      </div>
+      <div class="stat-card">
+        <h5>Đang hoạt động</h5>
+        <div class="number" id="activeUsers">0</div>
+      </div>
+      <div class="stat-card">
+        <h5>Đã hết hạn</h5>
+        <div class="number" id="expiredUsers">0</div>
+      </div>
+    </div>
+
+    <!-- Create User Section -->
+    <div class="section">
+      <h4>➕ Tạo tài khoản mới</h4>
+      <div class="form-grid">
+        <input id="newUser" placeholder="Tên tài khoản">
+        <input id="newPass" placeholder="Mật khẩu">
+      </div>
+      <select id="expireTime">
+        <option value="3600">1 Giờ</option>
+        <option value="21600">6 Giờ</option>
+        <option value="43200">12 Giờ</option>
+        <option value="86400">1 Ngày</option>
+        <option value="259200">3 Ngày</option>
+        <option value="604800">7 Ngày</option>
+        <option value="2592000">30 Ngày</option>
+        <option value="7776000">90 Ngày</option>
+        <option value="31536000">1 Năm</option>
+      </select>
+      <button onclick="createUser()">Tạo Tài Khoản</button>
+    </div>
+
+    <!-- User List Section -->
+    <div class="section">
+      <h4>📋 Danh sách tài khoản</h4>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Tài khoản</th>
+              <th>Mật khẩu</th>
+              <th>Thời gian còn lại</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="userList"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Notice Section -->
+    <div class="section">
+      <h4>📢 Thông báo cho người dùng</h4>
+      <textarea id="adminNotice" placeholder="Nhập thông báo hiển thị cho người dùng khi đăng nhập..."></textarea>
+      <button onclick="saveNotice()">💾 Lưu Thông Báo</button>
+    </div>
+
+    <!-- System Actions -->
+    <div class="section">
+      <h4>⚙️ Hành động hệ thống</h4>
+      <button onclick="exportData()">📥 Xuất dữ liệu</button>
+      <button onclick="importData()" style="background: linear-gradient(135deg, #0099ff 0%, #0066cc 100%);">📤 Nhập dữ liệu</button>
+      <button onclick="clearExpired()" style="background: linear-gradient(135deg, #ff9900 0%, #cc7700 100%);">🗑️ Xóa TK hết hạn</button>
+      <button onclick="clearAllUsers()" class="danger">⚠️ Xóa toàn bộ TK</button>
+    </div>
+  </div>
 </div>
 
 <script src="admin.js"></script>
