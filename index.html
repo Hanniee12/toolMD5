@@ -128,6 +128,243 @@ iframe {
   padding:15px;
   z-index:9999;
   cursor:move;
+  box-shadow:0 0 10px #0f0;
+  transition: transform 0.3s ease;
+}
+#miniBox input {
+  width:100%;
+  background:#111;
+  border:1px solid #00ffcc;
+  color:#0f0;
+  padding:10px;
+  border-radius:6px;
+  font-size:0.95rem;
+}
+#miniBox button {
+  width:100%;
+  padding:10px;
+  margin-top:6px;
+  background:#00ffcc;
+  border:none;
+  color:#000;
+  font-weight:bold;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:0.95rem;
+}
+#result { margin-top:10px; font-weight:bold; color:#fff; font-size:1rem; }
+#history {
+  margin-top:10px;
+  font-size:0.85rem;
+  color:#0f0;
+  max-height:120px;
+  overflow:auto;
+  border-top:1px solid #0f0;
+  padding-top:5px;
+}
+
+.rotated {
+  position: fixed;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0; 
+  transform: rotate(-90deg) translateX(-100%); 
+  z-index: 1000;
+}
+
+/* Responsive cho điện thoại nhỏ */
+@media screen and (max-width:480px) {
+  #userLogin, #joinBox, #miniBox, #noticeBox { padding:12px; }
+  input, button { font-size:0.95rem; padding:8px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Bảng thông báo -->
+<div id="noticeBox">
+  <p id="noticeContent">Thông báo ở đây...</p>
+  <button onclick="closeNotice()">Đóng</button>
+</div>
+
+<!-- Form đăng nhập -->
+<div id="userLogin">
+  <h3>Đăng nhập</h3>
+  <input id="user" placeholder="Tài khoản">
+  <input id="pass" type="password" placeholder="Mật khẩu">
+  <button onclick="userLoginNow()">Đăng Nhập</button>
+</div>
+
+<!-- Nhập link game -->
+<div id="joinBox">
+  <h3>Nhập link game</h3>
+  <input id="gameLink" placeholder="Nhập link game ở đây">
+  <button onclick="joinGame()">Vào</button>
+</div>
+
+<!-- Iframe game -->
+<iframe id="gameFrame"></iframe>
+
+<!-- Mini tool MD5 -->
+<div id="miniBox">
+  <h4>Tool MD5 V10 Pro</h4>
+  <button onclick="toggleMiniBox()" style="position:absolute; top:5px; right:5px; padding:5px 8px; font-size:0.8rem;">-</button>
+  <div id="miniContent">
+    <input id="md5Input" placeholder="Nhập MD5">
+    <button onclick="predict()">Dự đoán</button>
+    <button onclick="toggleInvert()">Đảo Cầu</button>
+    <button onclick="copyResult()">Past</button>
+    <button onclick="toggleRotation()">Tự Xoay</button>
+    <p id="result">...</p>
+    <div id="history">Lịch sử: [ ]</div>
+  </div>
+</div>
+  
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
+<script src="in.js"></script>
+<script>
+function closeNotice() {
+  document.getElementById('noticeBox').style.display='none';
+}
+
+function toggleRotation() {
+  const miniBox = document.getElementById('miniBox');
+  const rotateButton = document.querySelector('[onclick="toggleRotation()"]');
+  
+  miniBox.classList.toggle('rotated');
+  
+  if (miniBox.classList.contains('rotated')) {
+    rotateButton.textContent = 'Trở Lại';
+  } else {
+    rotateButton.textContent = 'Tự Xoay';
+  }
+}
+
+function toggleMiniBox() {
+  const content = document.getElementById('miniContent');
+  const btn = content.previousElementSibling;
+
+  if (content.style.display === 'none') {
+    content.style.display = 'block';
+    btn.textContent = '-';
+  } else {
+    content.style.display = 'none';
+    btn.textContent = '+';
+  }
+}
+
+function predict() { 
+  const md5 = document.getElementById('md5Input').value;
+  if(!md5) return alert('Nhập MD5 trước!');
+  document.getElementById('result').textContent = "Dự đoán: " + md5.slice(0,6) + "..."; // ví dụ
+}
+
+function toggleInvert() {
+  const miniBox = document.getElementById('miniBox');
+  if(miniBox.style.filter==='invert(1)') miniBox.style.filter='invert(0)';
+  else miniBox.style.filter='invert(1)';
+}
+
+function copyResult() {
+  const result = document.getElementById('result').textContent;
+  navigator.clipboard.writeText(result).then(()=>alert('Đã copy kết quả!'));
+}
+</script>
+</body>
+</html>  border-radius:12px;
+  box-shadow:0 0 10px #0f0;
+}
+#noticeBox button {
+  margin-top:12px;
+  padding:10px;
+  background:#00ffcc;
+  color:#000;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:bold;
+  width:100%;
+}
+
+/* Form đăng nhập */
+#userLogin {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:#111;
+  padding:20px;
+  border:1px solid #0f0;
+  border-radius:12px;
+  width:90%;
+  max-width:320px;
+  text-align:center;
+  z-index:10;
+  box-shadow:0 0 10px #0f0;
+}
+#userLogin input, #userLogin button {
+  width:100%;
+  padding:12px;
+  margin:6px 0;
+  border:none;
+  border-radius:6px;
+  font-size:1rem;
+}
+#userLogin input { background:#222; color:#0f0; }
+#userLogin button { background:#00ffcc; color:#000; font-weight:bold; cursor:pointer; }
+
+/* Join game box */
+#joinBox {
+  position:absolute;
+  top:15px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#111;
+  padding:20px;
+  border:1px solid #0f0;
+  border-radius:12px;
+  width:90%;
+  max-width:320px;
+  text-align:center;
+  z-index:10;
+  display:none;
+  box-shadow:0 0 8px #0f0;
+}
+#joinBox input, #joinBox button {
+  width:100%;
+  padding:12px;
+  margin:6px 0;
+  border:none;
+  border-radius:6px;
+  font-size:1rem;
+}
+#joinBox input { background:#222; color:#0f0; }
+#joinBox button { background:#00ffcc; color:#000; font-weight:bold; cursor:pointer; }
+
+/* Iframe game */
+iframe {
+  width:100vw;
+  height:100vh;
+  border:none;
+  display:none;
+  position:relative;
+  z-index:1;
+}
+
+/* Mini tool MD5 */
+#miniBox {
+  position:fixed;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  width:95%;
+  max-width:300px;
+  background:rgba(0,0,0,0.9);
+  border:1px solid #00ffcc;
+  border-radius:12px;
+  padding:15px;
+  z-index:9999;
+  cursor:move;
   display:none;
   box-shadow:0 0 10px #0f0;
 }
@@ -241,3 +478,4 @@ function copyResult() { }
 </script>
 </body>
 </html>
+
