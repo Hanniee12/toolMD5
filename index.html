@@ -2,70 +2,517 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MD5 Tool V10 Pro - Login</title>
 <style>
-body { margin:0; padding:0; font-family: monospace; background:#000; color:#0f0; overflow:hidden; }
-
-/* Form đăng nhập */
-#userLogin {
-  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-  background:#111; padding:20px; border:1px solid #0f0; border-radius:10px; width:320px; text-align:center; z-index:10;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
-#userLogin input, #userLogin button { width:100%; padding:10px; margin:8px 0; border:none; border-radius:5px; }
-#userLogin input { background:#222; color:#0f0; }
-#userLogin button { background:#00ffcc; color:#000; font-weight:bold; cursor:pointer; }
 
-/* Join game + miniBox */
-#joinBox, #miniBox { display:none; }
-#joinBox {
-  position:absolute; top:20px; left:50%; transform:translateX(-50%);
-  background:#111; padding:20px; border:1px solid #0f0; border-radius:10px; width:320px; text-align:center; z-index:10;
+body {
+  font-family: 'Courier New', monospace;
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+  color: #0f0;
+  overflow-x: hidden;
+  min-height: 100vh;
 }
-#joinBox input, #joinBox button { width:100%; padding:10px; margin:8px 0; border:none; border-radius:5px; }
-#joinBox input { background:#222; color:#0f0; }
-#joinBox button { background:#00ffcc; color:#000; font-weight:bold; cursor:pointer; }
 
-iframe { width:100vw; height:100vh; border:none; display:none; position:relative; z-index:1; }
-#miniBox {
-  position:fixed; top:20px; left:20px; width:300px;
-  background:rgba(0,0,0,0.85); border:1px solid #00ffcc; border-radius:10px; padding:12px;
-  display:none; z-index:9999; cursor:move;
+/* Animation cho background */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
-#miniBox input { width:100%; background:#111; border:1px solid #00ffcc; color:#0f0; padding:8px; border-radius:5px; }
-#miniBox button { width:100%; padding:8px; margin-top:5px; background:#00ffcc; border:none; color:#000; font-weight:bold; border-radius:5px; cursor:pointer; }
-#result { margin-top:8px; font-weight:bold; color:#fff; }
-#history { margin-top:8px; font-size:0.85rem; color:#0f0; max-height:120px; overflow:auto; border-top:1px solid #0f0; padding-top:5px; }
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(0, 255, 204, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(0, 255, 0, 0.1) 0%, transparent 50%);
+  animation: gradientShift 10s ease infinite;
+  pointer-events: none;
+  z-index: 0;
+}
 
 /* Bảng thông báo */
 #noticeBox {
-  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-  background:#111; border:2px solid #00ffcc; color:#0f0; padding:20px;
-  width:400px; text-align:center; z-index:10000; border-radius:10px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(17, 17, 17, 0.95);
+  backdrop-filter: blur(10px);
+  border: 2px solid #00ffcc;
+  color: #0f0;
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  z-index: 10000;
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(0, 255, 204, 0.5), 0 0 60px rgba(0, 255, 204, 0.3);
+  animation: slideIn 0.5s ease;
 }
-#noticeBox button { margin-top:10px; padding:8px; background:#00ffcc; color:#000; border:none; border-radius:5px; cursor:pointer; font-weight:bold; }
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+#noticeBox p {
+  margin-bottom: 20px;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+#noticeBox button {
+  margin-top: 15px;
+  padding: 12px 30px;
+  background: linear-gradient(135deg, #00ffcc 0%, #00cc99 100%);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  width: 100%;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 255, 204, 0.4);
+}
+
+#noticeBox button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 255, 204, 0.6);
+}
+
+#noticeBox button:active {
+  transform: translateY(0);
+}
+
+/* Form đăng nhập */
+#userLogin {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(17, 17, 17, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 40px;
+  border: 2px solid #0f0;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 380px;
+  text-align: center;
+  z-index: 100;
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#userLogin h3 {
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+  color: #00ffcc;
+  text-shadow: 0 0 10px rgba(0, 255, 204, 0.8);
+}
+
+#userLogin input {
+  width: 100%;
+  padding: 15px;
+  margin: 12px 0;
+  border: 2px solid #0f0;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: rgba(34, 34, 34, 0.8);
+  color: #0f0;
+  transition: all 0.3s ease;
+  font-family: 'Courier New', monospace;
+}
+
+#userLogin input:focus {
+  outline: none;
+  border-color: #00ffcc;
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
+  background: rgba(34, 34, 34, 1);
+}
+
+#userLogin button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 20px;
+  background: linear-gradient(135deg, #00ffcc 0%, #00cc99 100%);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 255, 204, 0.4);
+}
+
+#userLogin button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 255, 204, 0.6);
+}
+
+/* Join game box */
+#joinBox {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(17, 17, 17, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 30px;
+  border: 2px solid #0f0;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 380px;
+  text-align: center;
+  z-index: 100;
+  display: none;
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+  animation: slideDown 0.5s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+#joinBox h3 {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #00ffcc;
+  text-shadow: 0 0 10px rgba(0, 255, 204, 0.8);
+}
+
+#joinBox input {
+  width: 100%;
+  padding: 15px;
+  margin: 12px 0;
+  border: 2px solid #0f0;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: rgba(34, 34, 34, 0.8);
+  color: #0f0;
+  transition: all 0.3s ease;
+  font-family: 'Courier New', monospace;
+}
+
+#joinBox input:focus {
+  outline: none;
+  border-color: #00ffcc;
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
+}
+
+#joinBox button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 15px;
+  background: linear-gradient(135deg, #00ffcc 0%, #00cc99 100%);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 255, 204, 0.4);
+}
+
+#joinBox button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 255, 204, 0.6);
+}
+
+/* Iframe game */
+#gameFrame {
+  width: 100vw;
+  height: 100vh;
+  border: none;
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* Mini tool MD5 */
+#miniBox {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95%;
+  max-width: 340px;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(15px);
+  border: 2px solid #00ffcc;
+  border-radius: 20px;
+  padding: 20px;
+  z-index: 9999;
+  cursor: move;
+  display: none;
+  box-shadow: 0 0 30px rgba(0, 255, 204, 0.6), 0 0 60px rgba(0, 255, 204, 0.3);
+  transition: all 0.3s ease;
+}
+
+#miniBox:hover {
+  box-shadow: 0 0 40px rgba(0, 255, 204, 0.8), 0 0 80px rgba(0, 255, 204, 0.4);
+}
+
+#miniBox h4 {
+  margin: 0 0 15px 0;
+  color: #00ffcc;
+  font-size: 1.3rem;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(0, 255, 204, 0.8);
+}
+
+#miniBox .toggleBtn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 35px;
+  height: 35px;
+  padding: 0;
+  margin: 0;
+  background: linear-gradient(135deg, #00ffcc 0%, #00cc99 100%);
+  border: 2px solid #00ffcc;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #000;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#miniBox .toggleBtn:hover {
+  transform: rotate(180deg);
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.8);
+}
+
+#miniBox input {
+  width: 100%;
+  background: rgba(17, 17, 17, 0.9);
+  border: 2px solid #00ffcc;
+  color: #0f0;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+  font-family: 'Courier New', monospace;
+}
+
+#miniBox input:focus {
+  outline: none;
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.6);
+  background: rgba(17, 17, 17, 1);
+}
+
+#miniBox button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  background: linear-gradient(135deg, #00ffcc 0%, #00cc99 100%);
+  border: none;
+  color: #000;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 255, 204, 0.3);
+}
+
+#miniBox button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 255, 204, 0.5);
+}
+
+#miniBox button:active {
+  transform: translateY(0);
+}
+
+#result {
+  margin-top: 15px;
+  padding: 12px;
+  font-weight: bold;
+  color: #fff;
+  font-size: 1.1rem;
+  text-align: center;
+  background: rgba(0, 255, 204, 0.1);
+  border-radius: 10px;
+  border: 1px solid #00ffcc;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+#history {
+  margin-top: 15px;
+  padding: 12px;
+  font-size: 0.9rem;
+  color: #0f0;
+  max-height: 120px;
+  overflow-y: auto;
+  border-top: 2px solid #0f0;
+  border-radius: 10px;
+  background: rgba(0, 255, 0, 0.05);
+}
+
+#history::-webkit-scrollbar {
+  width: 6px;
+}
+
+#history::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+#history::-webkit-scrollbar-thumb {
+  background: #00ffcc;
+  border-radius: 10px;
+}
+
+.rotated {
+  position: fixed !important;
+  top: 50% !important;
+  left: 0 !important;
+  transform-origin: 0 0 !important;
+  transform: rotate(-90deg) translateX(-50%) !important;
+  z-index: 9999 !important;
+}
+
+/* Responsive cho điện thoại */
+@media screen and (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  #noticeBox, #userLogin, #joinBox {
+    padding: 20px;
+    max-width: 95%;
+  }
+
+  #userLogin h3, #joinBox h3 {
+    font-size: 1.3rem;
+  }
+
+  #miniBox {
+    max-width: 95%;
+    padding: 15px;
+  }
+
+  #miniBox h4 {
+    font-size: 1.1rem;
+    margin-right: 35px;
+  }
+
+  input, button {
+    font-size: 0.9rem;
+    padding: 12px;
+  }
+
+  #miniBox button {
+    padding: 10px;
+    font-size: 0.85rem;
+  }
+
+  #result {
+    font-size: 1rem;
+  }
+
+  #history {
+    font-size: 0.85rem;
+    max-height: 100px;
+  }
+}
+
+@media screen and (max-width: 360px) {
+  #noticeBox, #userLogin, #joinBox, #miniBox {
+    padding: 15px;
+  }
+
+  input, button {
+    padding: 10px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Loading animation */
+.loading {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  border: 3px solid rgba(0, 255, 204, 0.3);
+  border-top-color: #00ffcc;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 </style>
 </head>
 <body>
 
 <!-- Bảng thông báo -->
 <div id="noticeBox">
-  <p id="noticeContent"></p>
+  <p id="noticeContent">Đang tải thông báo...</p>
   <button onclick="closeNotice()">Đóng</button>
 </div>
 
 <!-- Form đăng nhập -->
 <div id="userLogin">
-  <h3>Đăng nhập</h3>
-  <input id="user" placeholder="Tài khoản">
-  <input id="pass" type="password" placeholder="Mật khẩu">
+  <h3>🔐 Đăng nhập</h3>
+  <input id="user" placeholder="Tài khoản" autocomplete="username">
+  <input id="pass" type="password" placeholder="Mật khẩu" autocomplete="current-password">
   <button onclick="userLoginNow()">Đăng Nhập</button>
 </div>
 
 <!-- Nhập link game -->
 <div id="joinBox">
-  <h3>Nhập link game</h3>
-  <input id="gameLink" placeholder="Nhập link game ở đây">
-  <button onclick="joinGame()">Vào</button>
+  <h3>🎮 Nhập link game</h3>
+  <input id="gameLink" placeholder="https://example.com/game">
+  <button onclick="joinGame()">Vào Game</button>
 </div>
 
 <!-- Iframe game -->
@@ -73,19 +520,106 @@ iframe { width:100vw; height:100vh; border:none; display:none; position:relative
 
 <!-- Mini tool MD5 -->
 <div id="miniBox">
-  <h4>Tool MD5 V10 Pro</h4>
-  <input id="md5Input" placeholder="Nhập MD5">
-  <button onclick="predict()">Dự đoán</button>
-  <button onclick="toggleInvert()">Đảo Cầu</button>
-  <button onclick="copyResult()">Past</button>
-  <p id="result">...</p>
-  <div id="history">Lịch sử: [ ]</div>
+  <h4>⚡ Tool MD5 V10 Pro</h4>
+  <button class="toggleBtn" onclick="toggleMiniBox()">−</button>
+  <div id="miniContent">
+    <input id="md5Input" placeholder="Nhập MD5 hash (32 ký tự)">
+    <button onclick="predict()">🎯 Dự đoán</button>
+    <button onclick="toggleInvert()">🔄 Đảo Cầu</button>
+    <button onclick="copyResult()">📋 Paste</button>
+    <button onclick="toggleRotation()">🔃 Tự Xoay</button>
+    <p id="result">Chờ dự đoán...</p>
+    <div id="history">Lịch sử: [ ]</div>
+  </div>
 </div>
+  
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
-
 <script src="in.js"></script>
+<script>
+// Toggle miniBox
+function toggleMiniBox() {
+  const content = document.getElementById('miniContent');
+  const btn = document.querySelector('.toggleBtn');
+  
+  if(content.style.display === 'none') { 
+    content.style.display = 'block'; 
+    btn.textContent = '−'; 
+  } else { 
+    content.style.display = 'none'; 
+    btn.textContent = '+'; 
+  }
+}
 
+// Xoay miniBox
+function toggleRotation() {
+  const miniBox = document.getElementById('miniBox');
+  const rotateButton = document.querySelector('[onclick="toggleRotation()"]');
+  
+  miniBox.classList.toggle('rotated');
+  
+  if (miniBox.classList.contains('rotated')) {
+    rotateButton.textContent = '↩️ Trở Lại';
+  } else {
+    rotateButton.textContent = '🔃 Tự Xoay';
+  }
+}
+</script>
+<script>
+// Toggle miniBox
+function toggleMiniBox() {
+  const content = document.getElementById('miniContent');
+  const btn = document.querySelector('.toggleBtn');
+  
+  if(content.style.display === 'none') { 
+    content.style.display = 'block'; 
+    btn.textContent = '−'; 
+  } else { 
+    content.style.display = 'none'; 
+    btn.textContent = '+'; 
+  }
+}
 
+// Xoay miniBox
+function toggleRotation() {
+  const miniBox = document.getElementById('miniBox');
+  const rotateButton = document.querySelector('[onclick="toggleRotation()"]');
+  
+  miniBox.classList.toggle('rotated');
+  
+  if (miniBox.classList.contains('rotated')) {
+    rotateButton.textContent = '↩️ Trở Lại';
+  } else {
+    rotateButton.textContent = '🔃 Tự Xoay';
+  }
+}
 
+// Touch support cho mobile
+(function(){
+  setTimeout(() => {
+    const box = document.getElementById('miniBox');
+    if(!box) return;
+    
+    let x = 0, y = 0, drag = false;
+    
+    box.addEventListener('touchstart', e => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+      drag = true;
+      const touch = e.touches[0];
+      x = touch.clientX - box.offsetLeft;
+      y = touch.clientY - box.offsetTop;
+    });
+    
+    document.addEventListener('touchend', () => drag = false);
+    
+    document.addEventListener('touchmove', e => {
+      if(!drag) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      box.style.left = (touch.clientX - x) + 'px';
+      box.style.top = (touch.clientY - y) + 'px';
+    });
+  }, 500);
+})();
+</script>
 </body>
 </html>
